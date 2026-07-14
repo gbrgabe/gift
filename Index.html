@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Você recebeu um presente 🎁">
+<meta property="og:description" content="Toque para abrir.">
+<meta property="og:url" content="https://gbrgabe.github.io/gift/">
+<meta property="og:image" content="https://gbrgabe.github.io/gift/presente-preview.png">
+<meta property="og:image:width" content="1260">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Você recebeu um presente 🎁">
+<meta name="twitter:description" content="Toque para abrir.">
+<meta name="twitter:image" content="https://gbrgabe.github.io/gift/presente-preview.png">
+
+<title>Um presente</title>
+<style>
+  :root{
+    --gift-bg-1:#241733;
+    --gift-bg-2:#150d20;
+    --gift-red-1:#c94a58;
+    --gift-red-2:#8f2836;
+    --gold-1:#f2c069;
+    --gold-2:#c9932f;
+    --rope-1:#cba36c;
+    --rope-2:#8a6a44;
+    --cream:#f4ecd8;
+    --well-dark:#05050a;
+    --well-mid:#181826;
+    --light-warm:#ffe9b8;
+    --harness-navy:#3d4f66;
+    --harness-yellow:#e8c847;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; width:100%; height:100%;
+    overflow:hidden;
+    font-family:'Georgia','Iowan Old Style',serif;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;
+  }
+  #stage{
+    position:fixed; top:0; left:0;
+    width:100vw; height:100vh;
+    background:var(--well-dark);
+  }
+  .scene{
+    display:none;
+    position:absolute; inset:0;
+    align-items:center; justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    padding:24px;
+  }
+  .scene.fade{ animation:fadeIn .7s ease both; }
+  @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+
+  #stage.state-gift .scene[data-scene="gift"]{display:flex;}
+  #stage.state-well .scene[data-scene="well"]{display:flex;}
+  #stage.state-end  .scene[data-scene="end"]{display:flex;}
+
+  .prompt-text{
+    color:var(--cream);
+    font-size:22px;
+    line-height:1.4;
+    max-width:340px;
+    margin-bottom:34px;
+    letter-spacing:.2px;
+  }
+  .prompt-text.small{ font-size:18px; margin-bottom:10px; }
+  .sub-text{
+    color:#d8cdb4;
+    font-family:system-ui,-apple-system,sans-serif;
+    font-size:15px;
+    max-width:300px;
+    margin-top:10px;
+    margin-bottom:30px;
+    opacity:.85;
+  }
+  .hint{
+    color:#a89a78;
+    font-family:system-ui,-apple-system,sans-serif;
+    font-size:13px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin-top:26px;
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.45;} 50%{opacity:1;} }
+
+  /* ---------- SCENE 1: GIFT ---------- */
+  .scene-gift{
+    background:radial-gradient(ellipse at 50% 30%, var(--gift-bg-1), var(--gift-bg-2) 70%);
+  }
+  .gift{
+    position:relative; width:200px; height:170px;
+    cursor:pointer;
+  }
+  .gift-base{
+    position:absolute; bottom:0; left:0; width:100%; height:110px;
+    background:linear-gradient(155deg, var(--gift-red-1), var(--gift-red-2));
+    border-radius:6px;
+    box-shadow:0 18px 40px rgba(0,0,0,.5);
+  }
+  .gift-base::after{
+    content:''; position:absolute; left:50%; top:0; bottom:0; width:26px;
+    transform:translateX(-50%);
+    background:linear-gradient(90deg, var(--gold-2), var(--gold-1), var(--gold-2));
+  }
+  .gift-lid{
+    position:absolute; top:14px; left:-6px; width:212px; height:38px;
+    background:linear-gradient(155deg, #d95b68, var(--gift-red-1));
+    border-radius:8px;
+    box-shadow:0 8px 16px rgba(0,0,0,.4);
+    transform-origin:bottom center;
+    transition:transform .8s cubic-bezier(.3,1.6,.5,1), opacity .5s ease .3s;
+    z-index:3;
+  }
+  .gift-lid::after{
+    content:''; position:absolute; left:50%; top:0; bottom:0; width:26px;
+    transform:translateX(-50%);
+    background:linear-gradient(90deg, var(--gold-2), var(--gold-1), var(--gold-2));
+  }
+  .bow{
+    position:absolute; top:-16px; left:50%; transform:translateX(-50%);
+    width:60px; height:26px; z-index:4;
+  }
+  .bow span{
+    position:absolute; width:30px; height:20px;
+    background:linear-gradient(145deg, var(--gold-1), var(--gold-2));
+    border-radius:60% 60% 60% 0%;
+    box-shadow:0 4px 8px rgba(0,0,0,.3);
+  }
+  .bow span:first-child{ left:0; transform:rotate(-18deg); }
+  .bow span:last-child{ right:0; transform:rotate(18deg) scaleX(-1); }
+  .bow i{
+    position:absolute; left:50%; top:6px; transform:translateX(-50%);
+    width:14px; height:14px; border-radius:50%;
+    background:var(--gold-1);
+    box-shadow:0 2px 4px rgba(0,0,0,.3);
+  }
+  .rope-peek{
+    position:absolute; left:50%; bottom:100px; transform:translateX(-50%) translateY(0);
+    width:34px; height:34px;
+    border:7px solid var(--rope-1);
+    border-radius:50%;
+    box-shadow:inset 0 0 0 2px var(--rope-2);
+    opacity:0;
+    transition:transform .7s cubic-bezier(.2,1.4,.4,1), opacity .5s ease;
+    z-index:2;
+  }
+  .gift.opening .gift-lid{
+    transform:rotateX(-135deg) translateY(-6px);
+    opacity:0;
+  }
+  .gift.opening .rope-peek{
+    opacity:1;
+    transform:translateX(-50%) translateY(-46px) rotate(8deg);
+  }
+
+  /* ---------- SCENE 2: WELL ---------- */
+  .scene-well{
+    padding:0;
+    background:
+      radial-gradient(ellipse 140px 90px at 50% 2%, rgba(200,222,240,.4), rgba(200,222,240,0) 70%),
+      radial-gradient(ellipse 220% 90% at 50% 115%, #2e3136 0%, #17181b 55%, #060607 100%);
+    transition:background 1.2s ease;
+    overflow:hidden;
+  }
+  .well-wrap{
+    position:relative; width:100%; height:100%;
+  }
+  .light-glow{
+    position:absolute; top:-8%; left:50%;
+    width:70px; height:70px;
+    transform:translate(-50%,0) scale(1);
+    border-radius:50%;
+    background:radial-gradient(circle, var(--light-warm) 0%, rgba(255,233,184,.5) 35%, rgba(255,233,184,0) 70%);
+    opacity:.25;
+    transition:transform 1s cubic-bezier(.3,.9,.4,1), opacity 1s ease;
+    filter:blur(1px);
+  }
+  .well-rim{
+    position:absolute; top:12%; left:50%;
+    transform:translateX(-50%) translateY(-50%);
+    width:230px; height:36px;
+    border-radius:50%;
+    background:radial-gradient(ellipse at center, rgba(255,240,200,.5), rgba(150,115,65,.4) 55%, transparent 78%);
+    border:3px solid rgba(110,80,45,.55);
+    box-shadow:0 0 24px rgba(255,230,170,.35);
+    opacity:0;
+    transition:opacity .7s ease;
+    z-index:3;
+    pointer-events:none;
+  }
+  .well-rim.show{ opacity:1; }
+  .well-rings{
+    position:absolute; inset:0;
+    background:repeating-radial-gradient(
+      circle at 50% -35%,
+      rgba(255,255,255,.07) 0px,
+      rgba(255,255,255,.07) 2px,
+      transparent 2px,
+      transparent 42px
+    );
+    opacity:.55;
+  }
+  .well-rings::after{
+    content:'';
+    position:absolute; inset:0;
+    background-image:repeating-linear-gradient(
+      78deg, rgba(0,0,0,.08) 0 3px, transparent 3px 26px
+    ),
+    repeating-linear-gradient(
+      -78deg, rgba(0,0,0,.06) 0 3px, transparent 3px 30px
+    );
+  }
+  .well-vignette{
+    position:absolute; inset:0;
+    background:radial-gradient(ellipse at 50% 60%, transparent 30%, rgba(0,0,0,.55) 85%);
+    pointer-events:none;
+  }
+  .graffiti{
+    position:absolute; z-index:1;
+    font-family:'Marker Felt','Segoe Print','Comic Sans MS',cursive,sans-serif;
+    font-weight:900;
+    line-height:1.05;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    -webkit-text-stroke:1.5px rgba(0,0,0,.5);
+    text-shadow:3px 3px 0 rgba(0,0,0,.4);
+    pointer-events:none;
+    opacity:.9;
+  }
+  .graffiti-left{
+    top:24%; left:6%;
+    font-size:25px;
+    color:#a479d6;
+    transform:rotate(-7deg);
+  }
+  .graffiti-right{
+    top:31%; right:7%;
+    font-size:23px;
+    color:#e0559a;
+    transform:rotate(4deg);
+  }
+  .graffiti-heart{
+    position:absolute; z-index:1;
+    width:30px; height:30px;
+    background:#d9448f;
+    transform:rotate(-45deg);
+    top:41%; right:10%;
+    opacity:.88;
+    box-shadow:2px 2px 0 rgba(0,0,0,.4);
+  }
+  .graffiti-heart::before, .graffiti-heart::after{
+    content:''; position:absolute; width:30px; height:30px;
+    background:#d9448f; border-radius:50%;
+  }
+  .graffiti-heart::before{ top:-15px; left:0; }
+  .graffiti-heart::after{ top:0; left:15px; }
+  .rope-well{
+    position:absolute; left:50%; top:8%; bottom:22%; width:10px;
+    transform:translateX(-50%) translateY(0);
+    background:repeating-linear-gradient(
+      -16deg, var(--rope-1) 0 3px, var(--rope-2) 3px 5px
+    );
+    border-radius:6px;
+    box-shadow:0 0 12px rgba(0,0,0,.6);
+    cursor:pointer;
+    transition:transform 1.7s cubic-bezier(.28,.7,.25,1);
+  }
+  .rope-well.pre-fall{
+    transform:translateX(-50%) translateY(-160%);
+  }
+  .rope-knot{
+    position:absolute; left:50%; bottom:0; transform:translateX(-50%) translateY(2px);
+    width:30px; height:32px;
+    background:radial-gradient(circle at 32% 28%, var(--rope-1), var(--rope-2) 78%);
+    border-radius:45% 45% 50% 50%/40% 40% 60% 60%;
+    background-image:
+      radial-gradient(circle at 32% 28%, var(--rope-1), var(--rope-2) 78%),
+      repeating-linear-gradient(65deg, transparent 0 2px, rgba(0,0,0,.18) 2px 3px),
+      repeating-linear-gradient(-65deg, transparent 0 2px, rgba(0,0,0,.12) 2px 3px);
+    box-shadow:0 6px 10px rgba(0,0,0,.5),
+      inset -3px -3px 0 rgba(0,0,0,.15),
+      inset 3px 3px 0 rgba(255,255,255,.08);
+    cursor:pointer;
+    z-index:4;
+  }
+  .person{
+    position:absolute; left:50%; top:78%;
+    transform:translate(-50%,-50%);
+    width:34px; height:64px;
+    opacity:1;
+    transition:top .55s cubic-bezier(.3,1.2,.4,1);
+    cursor:pointer;
+    z-index:5;
+  }
+  .person .head{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:16px; height:16px; border-radius:50%;
+    background:#e8c9a0;
+    z-index:1;
+  }
+  .person .hair{
+    position:absolute; top:-2px; left:50%; transform:translateX(-50%);
+    width:19px; height:68px;
+    background:linear-gradient(180deg, #3a2416, #24160d 55%, #180f09 85%, #140c07);
+    border-radius:50% 50% 45% 45%/50% 50% 60% 60%;
+    z-index:2;
+  }
+  .person .hair::before{
+    content:''; position:absolute; left:1px; right:1px; bottom:-6px;
+    height:22px;
+    background:linear-gradient(180deg, #180f09, transparent);
+    border-radius:0 0 50% 50%;
+    opacity:.9;
+  }
+  .person .hair::after{
+    content:''; position:absolute; top:26px; left:50%; transform:translateX(-50%);
+    width:11px; height:5px; border-radius:3px;
+    background:#e07ca0;
+    box-shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  .person .body{
+    position:absolute; top:14px; left:50%; transform:translateX(-50%);
+    width:16px; height:26px; border-radius:6px;
+    background:#b5486e;
+  }
+  .person .arm{
+    position:absolute; top:16px; width:6px; height:20px;
+    border-radius:4px; background:#9e3d60;
+  }
+  .person .arm.left{ left:6px; transform:rotate(22deg); transform-origin:top center; }
+  .person .arm.right{ right:6px; transform:rotate(-22deg); transform-origin:top center; }
+  .person .leg{
+    position:absolute; top:38px; width:6px; height:22px;
+    border-radius:4px; background:#31394a;
+  }
+  .person .leg.left{ left:9px; }
+  .person .leg.right{ right:9px; }
+  .person.bounce{ animation:climbBounce .5s ease; }
+  @keyframes climbBounce{
+    0%{ transform:translate(-50%,-50%) scale(1); }
+    35%{ transform:translate(-50%,-50%) scale(1.12,.9); }
+    100%{ transform:translate(-50%,-50%) scale(1); }
+  }
+
+  /* conector entre o corpo e a corda */
+  .person .connector{
+    position:absolute; top:-9px; left:50%; width:3px; height:11px;
+    transform:translateX(-50%);
+    background:linear-gradient(var(--rope-1), var(--rope-2));
+    border-radius:2px;
+    z-index:1;
+  }
+
+  /* harness (arreio de escalada) */
+  .person .harness{
+    position:absolute; top:29px; left:50%; transform:translateX(-50%);
+    width:22px; height:14px; z-index:3;
+  }
+  .person .harness .h-belt{
+    position:absolute; top:0; left:-3px; width:26px; height:5px;
+    background:linear-gradient(90deg, var(--harness-navy), var(--harness-yellow) 45%, var(--harness-yellow) 55%, var(--harness-navy));
+    border-radius:2px;
+    box-shadow:0 1px 2px rgba(0,0,0,.35);
+  }
+  .person .harness .h-buckle{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:4px; height:5px; background:var(--harness-yellow);
+    border-radius:1px;
+  }
+  .person .harness .h-loop{
+    position:absolute; top:3px; width:6px; height:9px;
+    border:2px solid var(--harness-yellow);
+    border-top:none;
+    border-radius:0 0 5px 5px;
+  }
+  .person .harness .h-loop.left{ left:0; transform:rotate(-10deg); }
+  .person .harness .h-loop.right{ right:0; transform:rotate(10deg); }
+
+  /* balão de pensamento */
+  .thought{
+    position:absolute; left:50%; top:78%;
+    transform:translate(-50%,-100%) translateY(10px) scale(.75);
+    min-width:130px; max-width:170px;
+    background:#fdf8ee; color:#3d2b12;
+    font-family:system-ui,-apple-system,sans-serif;
+    font-size:12px; font-weight:600; line-height:1.35; text-align:center;
+    padding:8px 11px; border-radius:14px;
+    box-shadow:0 6px 16px rgba(0,0,0,.4);
+    opacity:0; pointer-events:none;
+    transition:opacity .3s ease, transform .3s ease, top .55s cubic-bezier(.3,1.2,.4,1);
+    margin-bottom:16px;
+    z-index:9;
+  }
+  .thought::after{
+    content:''; position:absolute; bottom:-9px; left:50%;
+    transform:translateX(-50%);
+    width:0; height:0;
+    border-left:7px solid transparent; border-right:7px solid transparent;
+    border-top:9px solid #fdf8ee;
+  }
+  .thought.show{
+    opacity:1; transform:translate(-50%,-100%) translateY(0) scale(1);
+  }
+
+  /* animação de escalada: braços e pernas alternando */
+  @keyframes armClimbLeft{
+    0%{ transform:rotate(22deg); }
+    45%{ transform:rotate(-34deg); }
+    100%{ transform:rotate(22deg); }
+  }
+  @keyframes armClimbRight{
+    0%{ transform:rotate(-22deg); }
+    45%{ transform:rotate(34deg); }
+    100%{ transform:rotate(-22deg); }
+  }
+  @keyframes legClimbLeft{
+    0%{ transform:rotate(0deg); }
+    45%{ transform:rotate(-28deg); }
+    100%{ transform:rotate(0deg); }
+  }
+  @keyframes legClimbRight{
+    0%{ transform:rotate(0deg); }
+    45%{ transform:rotate(28deg); }
+    100%{ transform:rotate(0deg); }
+  }
+  .person.climbing .arm.left{ animation:armClimbLeft .48s ease-in-out; transform-origin:top center; }
+  .person.climbing .arm.right{ animation:armClimbRight .48s ease-in-out; transform-origin:top center; }
+  .person.climbing .leg.left{ animation:legClimbLeft .48s ease-in-out; transform-origin:top center; }
+  .person.climbing .leg.right{ animation:legClimbRight .48s ease-in-out; transform-origin:top center; }
+  .well-ui{
+    position:absolute; bottom:36px; left:0; right:0;
+    display:flex; flex-direction:column; align-items:center;
+    z-index:6;
+    opacity:0;
+    transition:opacity .6s ease;
+  }
+  @keyframes waveArm{
+    0%,100%{ transform:rotate(-14deg); }
+    50%{ transform:rotate(-75deg); }
+  }
+  .person.arrived{ opacity:1 !important; }
+  .person.arrived .arm.right{
+    animation:waveArm .5s ease-in-out 3;
+    transform-origin:top center;
+  }
+  .person.peek .arm.right{
+    animation:waveArm .5s ease-in-out 2;
+    transform-origin:top center;
+  }
+  .step-counter{
+    color:#c8bda0; font-family:system-ui,-apple-system,sans-serif;
+    font-size:13px; letter-spacing:1px; margin-top:14px; opacity:.7;
+  }
+
+  /* ---------- SCENE 4: END (praia) ---------- */
+  .scene-end{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  justify-content:flex-end;
+  background:linear-gradient(to bottom,
+    #2f9fe0 0%, #57bce6 26%, #7fd4e0 45%, #a0e6d2 62%, #bdeccb 72%
+  );
+  overflow:hidden;
+  padding-bottom:0;
+}
+  .flash{
+    position:absolute; inset:0; background:#fff8e6; opacity:0;
+    pointer-events:none; z-index:10;
+  }
+  .cloud{
+    position:absolute; background:#fff; border-radius:50px;
+    opacity:.9; z-index:1;
+  }
+  .cloud::before, .cloud::after{
+    content:''; position:absolute; background:#fff; border-radius:50%;
+  }
+  .cloud.c1{ top:11%; left:14%; width:64px; height:20px; }
+  .cloud.c1::before{ width:30px; height:30px; top:-14px; left:6px; }
+  .cloud.c1::after{ width:22px; height:22px; top:-9px; left:32px; }
+  .cloud.c2{ top:7%; right:16%; width:50px; height:16px; }
+  .cloud.c2::before{ width:22px; height:22px; top:-11px; left:5px; }
+  .cloud.c2::after{ width:18px; height:18px; top:-7px; left:24px; }
+  .sun{
+    position:absolute; top:8%; left:50%; transform:translateX(-50%);
+    width:70px; height:70px; border-radius:50%;
+    background:radial-gradient(circle, #fffef2, #fff2a8 50%, #ffe066 74%, rgba(255,224,102,0) 78%);
+    box-shadow:0 0 55px 22px rgba(255,240,150,.6);
+    z-index:1;
+  }
+  .bird{
+    position:absolute; width:16px; height:8px; z-index:1;
+    border-bottom:2px solid #4a5568;
+    border-radius:50% 50% 0 0/100% 100% 0 0;
+    opacity:.75;
+    animation:birdDrift 9s linear infinite;
+  }
+  .bird::before, .bird::after{
+    content:''; position:absolute; top:0; width:8px; height:8px;
+    border-bottom:2px solid #4a5568; border-radius:50% 50% 0 0/100% 100% 0 0;
+  }
+  .bird::before{ left:-7px; }
+  .bird::after{ left:7px; transform:scaleX(-1); }
+  .bird.b1{ top:16%; left:20%; animation-delay:0s; }
+  .bird.b2{ top:22%; left:65%; animation-delay:2.4s; }
+  .bird.b3{ top:13%; left:78%; animation-delay:5s; }
+  @keyframes birdDrift{
+    0%{ transform:translateX(0) translateY(0); }
+    50%{ transform:translateX(-18px) translateY(6px); }
+    100%{ transform:translateX(0) translateY(0); }
+  }
+  .sea{
+    position:absolute; left:0; right:0; bottom:22%; height:22%;
+    background:linear-gradient(to bottom, #3fd0c9, #23b3ae 55%, #1a9199);
+    z-index:1;
+  }
+  .sea::before{
+    content:'';
+    position:absolute; inset:0;
+    background-image:repeating-linear-gradient(
+      120deg, rgba(255,255,255,.16) 0 3px, transparent 3px 34px
+    );
+    animation:waveMove 6s linear infinite;
+  }
+  @keyframes waveMove{
+    from{ background-position-x:0; }
+    to{ background-position-x:-140px; }
+  }
+  .sand{
+    position:absolute; left:0; right:0; bottom:0; height:22%;
+    background:linear-gradient(to bottom, #fdf3dd, #f5e0ad);
+    z-index:2;
+  }
+  .sand::after{
+    content:''; position:absolute; inset:0;
+    background-image:radial-gradient(circle, rgba(255,255,255,.35) 1px, transparent 1.5px);
+    background-size:14px 14px;
+    opacity:.5;
+  }
+  .palm{
+    position:absolute; left:8%; bottom:20%; width:14px; height:80px; z-index:3;
+    background:linear-gradient(#7a5a36, #5c4426);
+    border-radius:4px;
+    transform:rotate(-6deg);
+    transform-origin:bottom center;
+  }
+  .palm .leaf{
+    position:absolute; top:-6px; left:50%; width:46px; height:16px;
+    background:#2f7a4d; border-radius:0 100% 0 100%;
+    transform-origin:0% 50%;
+  }
+  .palm .leaf:nth-child(1){ transform:translateX(-4px) rotate(-25deg); }
+  .palm .leaf:nth-child(2){ transform:translateX(-4px) rotate(15deg); background:#33875a; }
+  .palm .leaf:nth-child(3){ transform:translateX(-4px) rotate(50deg); background:#2a6d45; }
+  .palm .leaf:nth-child(4){ transform:translateX(-4px) rotate(-60deg); background:#33875a; }
+  .palm-2{
+    left:auto; right:10%; bottom:22%; width:10px; height:56px;
+    transform:rotate(7deg); opacity:.85;
+  }
+  .palm-2 .leaf{ width:34px; height:12px; }
+
+  /* poço visto de fora, na areia - o boneco emerge dele */
+  .sand-well{
+    position:absolute; left:50%; bottom:8%; transform:translateX(-50%);
+    width:118px; height:46px;
+    z-index:3;
+  }
+  .sw-rim{
+    position:absolute; inset:0;
+    border-radius:50%;
+    background:radial-gradient(ellipse at 50% 35%, #e2c48c, #c9a35f 55%, #a17c48 85%);
+    box-shadow:0 8px 16px rgba(0,0,0,.25), inset 0 3px 6px rgba(255,255,255,.35);
+    border:4px solid #b08a53;
+  }
+  .sw-hole{
+    position:absolute; left:14%; right:14%; top:20%; bottom:20%;
+    border-radius:50%;
+    background:radial-gradient(ellipse at center, #221a12, #05050a 80%);
+    z-index:1;
+  }
+  .exiter{
+    position:absolute; left:50%; bottom:34%;
+    transform:translate(-50%, 30px) scale(.88);
+    width:30px; height:56px;
+    z-index:2;
+    transition:transform .6s cubic-bezier(.3,1.1,.35,1);
+  }
+  .exiter .e-head{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:14px; height:14px; border-radius:50%;
+    background:#e8c9a0;
+    z-index:1;
+  }
+  .exiter .e-hair{
+    position:absolute; top:-2px; left:50%; transform:translateX(-50%);
+    width:17px; height:30px;
+    background:linear-gradient(180deg, #3a2416, #24160d 55%, #180f09 85%, #140c07);
+    border-radius:50% 50% 45% 45%/50% 50% 60% 60%;
+    z-index:2;
+  }
+  .exiter .e-hair::after{
+    content:''; position:absolute; top:22px; left:50%; transform:translateX(-50%);
+    width:10px; height:4px; border-radius:3px;
+    background:#e07ca0;
+  }
+  .exiter .e-body{
+    position:absolute; top:12px; left:50%; transform:translateX(-50%);
+    width:14px; height:24px; border-radius:6px;
+    background:#b5486e;
+  }
+  .exiter .e-belt{
+    position:absolute; top:26px; left:50%; transform:translateX(-50%);
+    width:18px; height:4px; border-radius:2px;
+    background:linear-gradient(90deg, var(--harness-navy), var(--harness-yellow) 45%, var(--harness-yellow) 55%, var(--harness-navy));
+  }
+  .exiter .e-arm{
+    position:absolute; top:11px; width:6px; height:21px;
+    border-radius:4px; background:#9e3d60;
+    transform-origin:top center;
+    transition:transform .4s ease;
+  }
+  .exiter .e-arm.left{ left:-3px; transform:rotate(55deg); }
+  .exiter .e-arm.right{ right:-3px; transform:rotate(-55deg); }
+  .exiter .e-leg{
+    position:absolute; top:34px; width:6px; height:20px;
+    border-radius:4px; background:#31394a;
+    opacity:0;
+    transition:opacity .3s ease .2s;
+  }
+  .exiter .e-leg.left{ left:2px; }
+  .exiter .e-leg.right{ right:2px; }
+
+  /* animação de escalada: braços "puxando" a cada toque */
+  @keyframes exiterArmLeft{
+    0%{ transform:rotate(55deg); }
+    45%{ transform:rotate(0deg); }
+    100%{ transform:rotate(55deg); }
+  }
+  @keyframes exiterArmRight{
+    0%{ transform:rotate(-55deg); }
+    45%{ transform:rotate(0deg); }
+    100%{ transform:rotate(-55deg); }
+  }
+  .exiter.climbing .e-arm.left{ animation:exiterArmLeft .5s ease-in-out; }
+  .exiter.climbing .e-arm.right{ animation:exiterArmRight .5s ease-in-out; }
+
+  .exiter.exit-mid{
+    transform:translate(-50%, 4px) scale(.94);
+  }
+  /* saiu de vez: sobe, sai de cima do buraco e fica de pé ao lado dele */
+  .exiter.exit-out{
+    transform:translate(calc(-50% - 55px), -12px) scale(1);
+  }
+  .exiter.exit-out .e-leg{ opacity:1; }
+  .exiter.exit-out .e-arm.left{ transform:rotate(12deg); }
+  .exiter.exit-out .e-arm.right{ animation:waveArm .6s ease-in-out 2; }
+  .exit-hint{
+    position:absolute; left:50%; bottom:4%; transform:translateX(-50%);
+    color:#3d2b12; font-family:system-ui,-apple-system,sans-serif;
+    font-size:12px; letter-spacing:1.5px; text-transform:uppercase;
+    font-weight:600; opacity:.75; z-index:5;
+    animation:pulse 1.8s ease-in-out infinite;
+    transition:opacity .4s ease;
+  }
+  .exit-hint.hide{ opacity:0; pointer-events:none; }
+
+  .drink{
+    position:absolute; right:12%; bottom:23%; z-index:3;
+    width:20px; height:30px;
+    background:linear-gradient(#ffe9b8, #ffcf7a);
+    border-radius:2px 2px 8px 8px;
+    box-shadow:0 4px 8px rgba(0,0,0,.15);
+  }
+  .drink::before{
+    content:''; position:absolute; top:-10px; left:2px;
+    width:16px; height:10px;
+    background:#f2994a;
+    clip-path:polygon(0 100%, 100% 100%, 60% 0);
+  }
+  .drink::after{
+    content:''; position:absolute; top:-16px; left:7px;
+    width:3px; height:16px; background:#e8e8e8; border-radius:2px;
+  }
+
+  /* segundo personagem: alguém esperando na praia */
+  .friend{
+    position:absolute; left:18%; bottom:22.5%; z-index:3;
+    width:30px; height:56px;
+  }
+  .friend .f-head{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:15px; height:15px; border-radius:50%;
+    background:#e8c9a0;
+  }
+  .friend .f-head::after{
+    content:''; position:absolute; top:-4px; left:-2px; right:-2px;
+    height:9px; border-radius:50% 50% 0 0;
+    background:#5a3a22;
+  }
+  .friend .f-body{
+    position:absolute; top:13px; left:50%; transform:translateX(-50%);
+    width:15px; height:23px; border-radius:6px;
+    background:#e8734a;
+  }
+  .friend .f-arm{
+    position:absolute; top:15px; width:6px; height:18px;
+    border-radius:4px; background:#d9633c;
+    transform-origin:top center;
+  }
+  .friend .f-arm.left{ left:4px; transform:rotate(20deg); }
+  .friend .f-arm.right{
+    right:4px;
+    animation:friendWave 1s ease-in-out infinite;
+  }
+  @keyframes friendWave{
+    0%,100%{ transform:rotate(-15deg); }
+    50%{ transform:rotate(-95deg); }
+  }
+  .friend .f-leg{
+    position:absolute; top:34px; width:6px; height:20px;
+    border-radius:4px; background:#3d5a78;
+  }
+  .friend .f-leg.left{ left:5px; }
+  .friend .f-leg.right{ right:5px; }
+  .friend-bubble{
+    position:absolute; bottom:100%; left:50%;
+    transform:translateX(-50%);
+    margin-bottom:10px;
+    min-width:110px;
+    background:#fdf8ee; color:#3d2b12;
+    font-family:system-ui,-apple-system,sans-serif;
+    font-size:11px; font-weight:600; text-align:center;
+    padding:6px 10px; border-radius:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,.25);
+    white-space:nowrap;
+    animation:bubblePulse 2.4s ease-in-out infinite;
+  }
+  .friend-bubble::after{
+    content:''; position:absolute; bottom:-7px; left:50%;
+    transform:translateX(-50%);
+    width:0; height:0;
+    border-left:6px solid transparent; border-right:6px solid transparent;
+    border-top:7px solid #fdf8ee;
+  }
+  @keyframes bubblePulse{
+    0%,100%{ opacity:.9; transform:translateX(-50%) translateY(0); }
+    50%{ opacity:1; transform:translateX(-50%) translateY(-3px); }
+  }
+
+  .end-content{
+    position:relative; z-index:4;
+    margin-bottom:42%;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .6s ease;
+  
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:24px;
+
+  .end-content.show{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .scene-end .prompt-text{ color:#3d2b12; text-shadow:0 1px 0 rgba(255,255,255,.3); }
+  .scene-end .sub-text{ color:#5a4322; font-weight:600; }
+  .restart-btn{
+    position:static;
+    margin-top:8px;
+    font-family:system-ui,-apple-system,sans-serif;
+    background:rgba(61,43,18,.85);
+    color:#fff3d6;
+    border:none;
+    border-radius:18px;
+    padding:10px 22px;
+    font-size:11px;
+    letter-spacing:.5px;
+    cursor:pointer;
+    text-transform:uppercase;
+    box-shadow:0 4px 12px rgba(0,0,0,.3);
+    backdrop-filter:blur(2px);
+}
+  .restart-btn:active{ transform:scale(.96); }
+</style>
+</head>
+<body>
+
+<div id="stage" class="state-gift">
+  <audio id="bgMusic" preload="auto" loop playsinline>
+    <source src="Audio.mp4" type="audio/mp4">
+  </audio>
+
+
+  <!-- SCENE 1: presente -->
+  <section class="scene scene-gift" data-scene="gift">
+    <div class="prompt-text">Chegou um presente pra você.</div>
+    <div class="gift" id="giftBox">
+      <div class="bow"><span></span><span></span><i></i></div>
+      <div class="gift-lid"></div>
+      <div class="rope-peek"></div>
+      <div class="gift-base"></div>
+    </div>
+    <div class="hint">toque na caixa</div>
+  </section>
+
+  <!-- SCENE 2: o poço -->
+  <section class="scene scene-well" data-scene="well">
+    <div class="well-wrap">
+      <div class="well-rings"></div>
+      <div class="graffiti graffiti-left">You got<br>this!</div>
+      <div class="graffiti graffiti-right">I love u</div>
+      <div class="graffiti-heart"></div>
+      <div class="light-glow" id="lightGlow"></div>
+      <div class="well-rim" id="wellRim"></div>
+      <div class="well-vignette"></div>
+      <div class="rope-well" id="ropeWell">
+        <div class="rope-knot" id="ropeKnot"></div>
+      </div>
+      <div class="thought" id="thoughtBubble"></div>
+      <div class="person" id="person">
+        <div class="head"></div>
+        <div class="hair"></div>
+        <div class="connector"></div>
+        <div class="harness">
+          <span class="h-belt"></span>
+          <span class="h-loop left"></span>
+          <span class="h-loop right"></span>
+          <span class="h-buckle"></span>
+        </div>
+        <div class="arm left"></div>
+        <div class="arm right"></div>
+        <div class="body"></div>
+        <div class="leg left"></div>
+        <div class="leg right"></div>
+      </div>
+      <div class="well-ui" id="wellUi">
+        <div class="prompt-text small" id="wellPrompt"></div>
+        <div class="hint">toque na corda pra subir</div>
+        <div class="step-counter" id="stepCounter">0 / 8</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4: fim -->
+  <section class="scene scene-end" data-scene="end">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="sun"></div>
+    <div class="bird b1"></div>
+    <div class="bird b2"></div>
+    <div class="bird b3"></div>
+    <div class="sea"></div>
+    <div class="sand"></div>
+    <div class="sand-well" id="sandWell">
+      <div class="sw-rim"></div>
+      <div class="sw-hole"></div>
+      <div class="exiter" id="exiter">
+        <div class="e-head"></div>
+        <div class="e-hair"></div>
+        <div class="e-belt"></div>
+        <div class="e-arm left"></div>
+        <div class="e-arm right"></div>
+        <div class="e-body"></div>
+        <div class="e-leg left"></div>
+        <div class="e-leg right"></div>
+      </div>
+    </div>
+    <div class="palm">
+      <div class="leaf"></div>
+      <div class="leaf"></div>
+      <div class="leaf"></div>
+      <div class="leaf"></div>
+    </div>
+    <div class="palm palm-2">
+      <div class="leaf"></div>
+      <div class="leaf"></div>
+      <div class="leaf"></div>
+      <div class="leaf"></div>
+    </div>
+    <div class="drink"></div>
+    <div class="friend" id="friend">
+      <div class="friend-bubble" id="friendBubble">Ei! Por aqui! 👋</div>
+      <div class="f-head"></div>
+      <div class="f-body"></div>
+      <div class="f-arm left"></div>
+      <div class="f-arm right"></div>
+      <div class="f-leg left"></div>
+      <div class="f-leg right"></div>
+    </div>
+    <div class="flash" id="flash"></div>
+    <div class="exit-hint" id="exitHint">toque pra sair do poço</div>
+    <div class="end-content" id="endContent">
+      <div class="prompt-text">A vida tem altos e baixos.</div>
+      <div class="sub-text">Que bom que agora você chegou ao topo. Aproveite a vista. ☀️🌊</div>
+      <button class="restart-btn" id="restartBtn">ver de novo</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const bgMusic = document.getElementById('bgMusic');
+
+  function startMusic(){
+    if (!bgMusic) return;
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+    bgMusic.muted = false;
+    bgMusic.volume = 0.65;
+    const playPromise = bgMusic.play();
+    if (playPromise) {
+      playPromise.catch((error) => console.warn('Não foi possível iniciar a trilha:', error));
+    }
+  }
+
+  // reforço: mede a altura real visível via JS, caso vh/dvh não se comportem bem no ambiente de preview
+  function fitStageToViewport(){
+    const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    stage.style.height = h + 'px';
+    stage.style.width = (window.visualViewport ? window.visualViewport.width : window.innerWidth) + 'px';
+  }
+  fitStageToViewport();
+  window.addEventListener('resize', fitStageToViewport);
+  window.addEventListener('orientationchange', fitStageToViewport);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', fitStageToViewport);
+  }
+
+  const giftBox = document.getElementById('giftBox');
+  const ropeWell = document.getElementById('ropeWell');
+  const ropeKnot = document.getElementById('ropeKnot');
+  const person = document.getElementById('person');
+  const lightGlow = document.getElementById('lightGlow');
+  const wellRim = document.getElementById('wellRim');
+  const stepCounter = document.getElementById('stepCounter');
+  const wellPrompt = document.getElementById('wellPrompt');
+  const wellScene = document.querySelector('.scene-well');
+  const endScene = document.querySelector('.scene-end');
+  const wellUi = document.getElementById('wellUi');
+  const flash = document.getElementById('flash');
+  const restartBtn = document.getElementById('restartBtn');
+  const thoughtBubble = document.getElementById('thoughtBubble');
+  const exiter = document.getElementById('exiter');
+  const exitHint = document.getElementById('exitHint');
+  const endContent = document.getElementById('endContent');
+
+  const THOUGHTS = [
+    'Vish, hoje o treino de braço veio de graça 💪',
+    'Se eu cair agora... vira meme na certa 😂',
+    'Falta pouco, já sinto cheirinho de maresia!'
+  ];
+  let thoughtIndex = 0;
+  let thoughtTimeout = null;
+
+  const STEPS = 8;
+  const TOP_START = 78; // % - fundo do poço (o boneco já está parado aqui, no escuro)
+  const TOP_END = 8;    // % - topo do poço
+  let climb = 0;
+  let advancing = false;
+  let introReady = false; // só libera o toque depois da corda cair e do pensamento inicial
+
+  const EXIT_STEPS = 1; // toques pra sair do buraco, já na praia
+  let exitClimb = 0;
+  let exitDone = false;
+
+  function setState(name){
+    stage.className = 'state-' + name;
+    const activeScene = stage.querySelector('.scene[data-scene="' + name + '"]');
+    activeScene.classList.remove('fade');
+    void activeScene.offsetWidth; // reflow pra reiniciar a animação
+    activeScene.classList.add('fade');
+  }
+
+  function setClimberTop(topPercent){
+    person.style.top = topPercent + '%';
+    thoughtBubble.style.top = topPercent + '%';
+  }
+
+  function showThought(text, duration){
+    clearTimeout(thoughtTimeout);
+    thoughtBubble.textContent = text;
+    thoughtBubble.classList.add('show');
+    thoughtTimeout = setTimeout(() => thoughtBubble.classList.remove('show'), duration);
+  }
+
+  // entra no poço: a corda é jogada lá dentro, o boneco (invisível no escuro)
+  // já está parado no fundo esperando e reage vendo a corda cair
+  function enterWell(){
+    introReady = false;
+    climb = 0;
+    person.classList.remove('bounce', 'climbing', 'arrived', 'peek');
+    setClimberTop(TOP_START);
+    lightGlow.style.transform = 'translate(-50%,0) scale(1)';
+    lightGlow.style.opacity = '0.25';
+    wellRim.classList.remove('show');
+    stepCounter.textContent = '0 / ' + STEPS;
+    wellPrompt.textContent = '';
+    thoughtBubble.classList.remove('show');
+    wellUi.style.opacity = '0';
+
+    // a corda ainda não existe na cena: só o boneco aparece, parado, esperando
+    ropeWell.classList.add('pre-fall');
+
+    setState('well');
+
+    // ela fica sozinha por um instante e pensa "E agora?"
+    setTimeout(() => showThought('E agora?', 3500), 200);
+
+    // depois que ela pensa, a corda cai do céu até ela
+    setTimeout(() => {
+      ropeWell.classList.remove('pre-fall');
+    }, 3900);
+
+    // libera o toque assim que a corda termina de cair
+    setTimeout(() => {
+      wellUi.style.opacity = '1';
+      introReady = true;
+    }, 3900 + 1700 + 300);
+  }
+
+  giftBox.addEventListener('click', () => {
+    if (giftBox.classList.contains('opening')) return;
+    giftBox.classList.add('opening');
+    startMusic();
+    setTimeout(enterWell, 950);
+  });
+
+  function advanceClimb(){
+    if (!introReady || advancing || climb >= STEPS) return;
+    advancing = true;
+    climb++;
+
+    const progress = climb / STEPS;
+    const top = TOP_START + (TOP_END - TOP_START) * progress;
+    setClimberTop(top);
+
+    const scale = 1 + progress * 9;
+    const glowOpacity = 0.25 + progress * 0.85;
+    lightGlow.style.transform = 'translate(-50%,0) scale(' + scale + ')';
+    lightGlow.style.opacity = glowOpacity;
+
+    person.classList.remove('bounce', 'climbing');
+    void person.offsetWidth;
+    person.classList.add('bounce', 'climbing');
+
+    stepCounter.textContent = climb + ' / ' + STEPS;
+
+    if (climb === Math.ceil(STEPS/2)) {
+      wellPrompt.textContent = 'Falta pouco. Continua.';
+    }
+
+    // penúltimo degrau: a cabeça do boneco aparece na borda do poço, acenando
+    if (climb === STEPS - 1) {
+      clearTimeout(thoughtTimeout);
+      thoughtBubble.classList.remove('show');
+      wellRim.classList.add('show');
+      wellPrompt.textContent = 'Tá quase lá! Você consegue! 👋';
+      person.classList.add('peek');
+      setTimeout(() => person.classList.remove('peek'), 1200);
+    }
+
+    // balões de pensamento positivos/engraçados em alguns degraus da subida
+    if (climb === 2 || climb === 4 || climb === 6) {
+      showThought(THOUGHTS[thoughtIndex % THOUGHTS.length], 1500);
+      thoughtIndex++;
+    }
+
+    setTimeout(() => {
+      advancing = false;
+      person.classList.remove('climbing');
+      if (climb >= STEPS) finishClimb();
+    }, 480);
+  }
+
+  function finishClimb(){
+    // chegou no topo: agora dá pra ver o boneco por completo, acenando
+    clearTimeout(thoughtTimeout);
+    thoughtBubble.classList.remove('show');
+    person.style.opacity = '1';
+    person.classList.add('arrived');
+    wellPrompt.textContent = 'Cheguei! 👋';
+
+    setTimeout(() => {
+      flash.style.transition = 'opacity 1.1s ease';
+      flash.style.opacity = '1';
+      setTimeout(() => {
+        // muda a perspectiva: agora é vista de fora, na praia,
+        // com o amigo que jogou a corda e o boneco ainda dentro do buraco
+        exitClimb = 0;
+        exitDone = false;
+        exiter.classList.remove('exit-mid', 'exit-out', 'climbing');
+        exitHint.classList.remove('hide');
+        endContent.classList.remove('show');
+
+        setState('end');
+        person.classList.remove('arrived');
+        setTimeout(() => { flash.style.opacity = '0'; }, 50);
+      }, 900);
+    }, 1000);
+  }
+
+  function advanceExit(){
+    if (exitDone || exitClimb >= EXIT_STEPS) return;
+    exitClimb++;
+
+    exiter.classList.remove('climbing');
+    void exiter.offsetWidth;
+    exiter.classList.add('climbing');
+
+    if (exitClimb >= EXIT_STEPS) {
+      exiter.classList.remove('exit-mid');
+      exiter.classList.add('exit-out');
+      exitDone = true;
+      exitHint.classList.add('hide');
+      setTimeout(() => endContent.classList.add('show'), 650);
+    } else {
+      exiter.classList.add('exit-mid');
+    }
+
+    setTimeout(() => exiter.classList.remove('climbing'), 550);
+  }
+
+  endScene.addEventListener('click', (e) => {
+    if (exitDone) return;
+    if (e.target.closest('#restartBtn')) return;
+    advanceExit();
+  });
+
+  ropeWell.addEventListener('click', advanceClimb);
+  ropeKnot.addEventListener('click', advanceClimb);
+  person.addEventListener('click', advanceClimb);
+  wellScene.addEventListener('click', (e) => {
+    if (e.target === wellScene || e.target.classList.contains('well-wrap') || e.target.classList.contains('well-vignette')) {
+      advanceClimb();
+    }
+  });
+
+  restartBtn.addEventListener('click', () => {
+    thoughtIndex = 0;
+    clearTimeout(thoughtTimeout);
+    thoughtBubble.classList.remove('show');
+    person.classList.remove('bounce', 'climbing', 'arrived');
+    giftBox.classList.remove('opening');
+    exitClimb = 0;
+    exitDone = false;
+    exiter.classList.remove('exit-mid', 'exit-out', 'climbing');
+    exitHint.classList.remove('hide');
+    endContent.classList.remove('show');
+    flash.style.transition = 'none';
+    flash.style.opacity = '0';
+    setState('gift');
+  });
+</script>
+
+</body>
+</html>
