@@ -412,14 +412,17 @@
 
   /* ---------- SCENE 4: END (praia) ---------- */
   .scene-end{
-    position:relative;
-    justify-content:flex-end;
-    background:linear-gradient(to bottom,
-      #2f9fe0 0%, #57bce6 26%, #7fd4e0 45%, #a0e6d2 62%, #bdeccb 72%
-    );
-    overflow:hidden;
-    padding-bottom:0;
-  }
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  justify-content:flex-end;
+  background:linear-gradient(to bottom,
+    #2f9fe0 0%, #57bce6 26%, #7fd4e0 45%, #a0e6d2 62%, #bdeccb 72%
+  );
+  overflow:hidden;
+  padding-bottom:0;
+}
   .flash{
     position:absolute; inset:0; background:#fff8e6; opacity:0;
     pointer-events:none; z-index:10;
